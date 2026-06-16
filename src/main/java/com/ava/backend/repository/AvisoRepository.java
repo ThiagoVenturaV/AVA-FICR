@@ -1,0 +1,11 @@
+package com.ava.backend.repository;
+
+import com.ava.backend.model.Aviso;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+import java.util.List;
+
+@Repository
+public interface AvisoRepository extends JpaRepository<Aviso, Long> {
+    List<Aviso> findAllByOrderByDataPublicacaoDesc();
+}
