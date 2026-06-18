@@ -62,6 +62,18 @@ Para facilitar a correção pelo professor ou execução em qualquer ambiente, a
 
 ---
 
+## 📖 Documentação Interativa da API (Swagger / OpenAPI)
+
+Para visualizar todos os endpoints detalhadamente e testá-los diretamente pelo navegador, a API conta com a interface do **Swagger UI**.
+
+* **URL de Acesso:** [http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html)
+
+Com o Swagger, você pode:
+* Visualizar os schemas de entrada e saída (DTOs) com suas validações.
+* Executar as chamadas HTTP (POST, GET, PUT, DELETE) com dados reais de teste diretamente pelo navegador utilizando o botão **"Try it out"**.
+
+---
+
 ## ⚡ Carga de Dados Inicial (Seed)
 
 Ao iniciar pela primeira vez em um banco de dados vazio, a aplicação executa automaticamente um script de seeding (`DataInitializer`) que pré-popula:
