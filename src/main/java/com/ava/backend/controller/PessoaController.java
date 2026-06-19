@@ -21,4 +21,15 @@ public class PessoaController {
     public ResponseEntity<Pessoa> cadastrar(@Valid @RequestBody PessoaRequest request) {
         return new ResponseEntity<>(pessoaService.cadastrar(request), HttpStatus.CREATED);
     }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<Pessoa> atualizar(@PathVariable Long id, @RequestBody PessoaRequest request) {
+        return ResponseEntity.ok(pessoaService.atualizar(id, request));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> excluir(@PathVariable Long id) {
+        pessoaService.excluir(id);
+        return ResponseEntity.noContent().build();
+    }
 }

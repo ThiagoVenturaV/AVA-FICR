@@ -26,4 +26,18 @@ public class AvisoController {
     public ResponseEntity<List<Aviso>> listarTodos() {
         return ResponseEntity.ok(avisoService.listarTodosMaisRecentes());
     }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<Aviso> atualizar(
+            @PathVariable Long id,
+            @RequestParam(required = false) String titulo,
+            @RequestParam(required = false) String conteudo) {
+        return ResponseEntity.ok(avisoService.atualizar(id, titulo, conteudo));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> excluir(@PathVariable Long id) {
+        avisoService.excluir(id);
+        return ResponseEntity.noContent().build();
+    }
 }

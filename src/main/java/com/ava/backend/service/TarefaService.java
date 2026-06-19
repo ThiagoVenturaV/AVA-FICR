@@ -70,4 +70,45 @@ public class TarefaService {
     public List<Tarefa> listarPorDisciplina(Long disciplinaId) {
         return tarefaRepository.findByDisciplinaId(disciplinaId);
     }
+
+    public Tarefa atualizar(Long id, TarefaRequest request) {
+        Tarefa tarefa = tarefaRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Tarefa não encontrada"));
+
+        if (request.getTitulo() != null) {
+            tarefa.setTitulo(request.getTitulo());
+        }
+        if (request.getDescricao() != null) {
+            tarefa.setDescricao(request.getDescricao());
+        }
+        if (request.getDataEntrega() != null) {
+            tarefa.setDataEntrega(request.getDataEntrega());
+        }
+        if (request.getPontosMaximos() != null) {
+            Double novosPontos = request.getPontosMaximos();
+            if (novosPontos < 0) {
+                throw new BusinessRuleException("Pontos máximos não podem ser negativos");
+            }
+            List<EntregaTarefa> entregas = entregaTarefaRepository.findByTarefaId(id);
+            for (EntregaTarefa entrega : entregas) {
+                if (entrega.getNota() != null && entrega.getNota() > novosPontos) {
+                    entrega.setNota(novosPontos);
+                    entregaTarefaRepository.save(entrega);
+                }
+            }
+            tarefa.setPontosMaximos(novosPontos);
+        }
+
+        return tarefaRepository.save(tarefa);
+    }
+
+    public void excluir(Long id) {
+        Tarefa tarefa = tarefaRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Tarefa não encontrada"));
+
+        List<EntregaTarefa> entregas = entregaTarefaRepository.findByTarefaId(id);
+        entregaTarefaRepository.deleteAll(entregas);
+
+        tarefaRepository.delete(tarefa);
+    }
 }

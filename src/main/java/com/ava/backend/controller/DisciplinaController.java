@@ -30,4 +30,18 @@ public class DisciplinaController {
     public ResponseEntity<List<Disciplina>> listarTodos() {
         return ResponseEntity.ok(disciplinaService.listarTodos());
     }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<Disciplina> atualizar(
+            @PathVariable Long id,
+            @RequestParam(required = false) String nome,
+            @RequestParam(required = false) Long professorId) {
+        return ResponseEntity.ok(disciplinaService.atualizar(id, nome, professorId));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> excluir(@PathVariable Long id) {
+        disciplinaService.excluir(id);
+        return ResponseEntity.noContent().build();
+    }
 }

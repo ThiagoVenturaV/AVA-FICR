@@ -72,4 +72,29 @@ public class ProtocoloService {
     public List<Protocolo> listarTodos() {
         return protocoloRepository.findAll();
     }
+
+    public Protocolo atualizar(Long id, ProtocoloRequest request) {
+        Protocolo protocolo = protocoloRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Protocolo não encontrado"));
+
+        if (protocolo.getStatus() != StatusProtocolo.EM_ANALISE) {
+            throw new BusinessRuleException("Apenas protocolos em análise podem ser atualizados");
+        }
+
+        if (request.getTipo() != null) {
+            protocolo.setTipo(request.getTipo());
+        }
+
+        if (request.getDescricao() != null) {
+            protocolo.setDescricao(request.getDescricao());
+        }
+
+        return protocoloRepository.save(protocolo);
+    }
+
+    public void excluir(Long id) {
+        Protocolo protocolo = protocoloRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Protocolo não encontrado"));
+        protocoloRepository.delete(protocolo);
+    }
 }

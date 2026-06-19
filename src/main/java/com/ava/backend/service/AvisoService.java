@@ -42,4 +42,25 @@ public class AvisoService {
     public List<Aviso> listarTodosMaisRecentes() {
         return avisoRepository.findAllByOrderByDataPublicacaoDesc();
     }
+
+    public Aviso atualizar(Long id, String titulo, String conteudo) {
+        Aviso aviso = avisoRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Aviso não encontrado"));
+
+        if (titulo != null) {
+            aviso.setTitulo(titulo);
+        }
+
+        if (conteudo != null) {
+            aviso.setConteudo(conteudo);
+        }
+
+        return avisoRepository.save(aviso);
+    }
+
+    public void excluir(Long id) {
+        Aviso aviso = avisoRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Aviso não encontrado"));
+        avisoRepository.delete(aviso);
+    }
 }

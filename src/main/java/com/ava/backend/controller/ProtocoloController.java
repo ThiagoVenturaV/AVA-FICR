@@ -38,4 +38,15 @@ public class ProtocoloController {
     public ResponseEntity<List<Protocolo>> listarTodos() {
         return ResponseEntity.ok(protocoloService.listarTodos());
     }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<Protocolo> atualizar(@PathVariable Long id, @RequestBody ProtocoloRequest request) {
+        return ResponseEntity.ok(protocoloService.atualizar(id, request));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> excluir(@PathVariable Long id) {
+        protocoloService.excluir(id);
+        return ResponseEntity.noContent().build();
+    }
 }

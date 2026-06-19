@@ -59,4 +59,20 @@ public class EntregaTarefaController {
             @PathVariable Long alunoId, @PathVariable Long disciplinaId) {
         return ResponseEntity.ok(entregaTarefaService.obterRendimento(alunoId, disciplinaId));
     }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<EntregaTarefa> atualizar(
+            @PathVariable Long id,
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) String respostaText,
+            @RequestParam(required = false) Double nota,
+            @RequestParam(required = false) String feedback) {
+        return ResponseEntity.ok(entregaTarefaService.atualizar(id, status, respostaText, nota, feedback));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> excluir(@PathVariable Long id) {
+        entregaTarefaService.excluir(id);
+        return ResponseEntity.noContent().build();
+    }
 }

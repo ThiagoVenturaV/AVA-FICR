@@ -27,4 +27,15 @@ public class TarefaController {
     public ResponseEntity<List<Tarefa>> listarPorDisciplina(@PathVariable Long disciplinaId) {
         return ResponseEntity.ok(tarefaService.listarPorDisciplina(disciplinaId));
     }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<Tarefa> atualizar(@PathVariable Long id, @RequestBody TarefaRequest request) {
+        return ResponseEntity.ok(tarefaService.atualizar(id, request));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> excluir(@PathVariable Long id) {
+        tarefaService.excluir(id);
+        return ResponseEntity.noContent().build();
+    }
 }

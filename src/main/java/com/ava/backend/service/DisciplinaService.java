@@ -71,4 +71,38 @@ public class DisciplinaService {
     public List<Disciplina> listarTodos() {
         return disciplinaRepository.findAll();
     }
+
+    public Disciplina atualizar(Long id, String nome, Long professorId) {
+        Disciplina disciplina = disciplinaRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Disciplina não encontrada"));
+
+        if (nome != null) {
+            disciplina.setNome(nome);
+        }
+
+        if (professorId != null) {
+            Professor professor = professorRepository.findById(professorId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Professor não encontrado"));
+            disciplina.setProfessor(professor);
+        }
+
+        return disciplinaRepository.save(disciplina);
+    }
+
+    public void excluir(Long id) {
+        Disciplina disciplina = disciplinaRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Disciplina não encontrada"));
+
+        List<Tarefa> tarefas = tarefaRepository.findByDisciplinaId(id);
+        for (Tarefa tarefa : tarefas) {
+            List<EntregaTarefa> entregas = entregaTarefaRepository.findByTarefaId(tarefa.getId());
+            entregaTarefaRepository.deleteAll(entregas);
+            tarefaRepository.delete(tarefa);
+        }
+
+        disciplina.getAlunos().clear();
+        disciplinaRepository.saveAndFlush(disciplina);
+
+        disciplinaRepository.delete(disciplina);
+    }
 }

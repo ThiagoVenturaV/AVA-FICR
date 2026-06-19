@@ -138,4 +138,41 @@ public class EntregaTarefaService {
 
         return new RendimentoResponse(disciplina.getNome(), media, status, tarefasDto);
     }
+
+    public EntregaTarefa atualizar(Long id, String status, String respostaText, Double nota, String feedback) {
+        EntregaTarefa entrega = entregaTarefaRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Registro de entrega não encontrado"));
+
+        if (status != null) {
+            try {
+                entrega.setStatus(StatusTarefa.valueOf(status.toUpperCase()));
+            } catch (IllegalArgumentException e) {
+                throw new BusinessRuleException("Status inválido. Deve ser PENDENTE, EM_ANDAMENTO ou ENTREGUE.");
+            }
+        }
+
+        if (respostaText != null) {
+            entrega.setRespostaText(respostaText);
+        }
+
+        if (nota != null) {
+            double pontosMaximos = entrega.getTarefa().getPontosMaximos();
+            if (nota < 0 || nota > pontosMaximos) {
+                throw new BusinessRuleException("A nota de avaliação deve estar entre 0.0 e a pontuação máxima de " + pontosMaximos);
+            }
+            entrega.setNota(nota);
+        }
+
+        if (feedback != null) {
+            entrega.setFeedback(feedback);
+        }
+
+        return entregaTarefaRepository.save(entrega);
+    }
+
+    public void excluir(Long id) {
+        EntregaTarefa entrega = entregaTarefaRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Registro de entrega não encontrado"));
+        entregaTarefaRepository.delete(entrega);
+    }
 }

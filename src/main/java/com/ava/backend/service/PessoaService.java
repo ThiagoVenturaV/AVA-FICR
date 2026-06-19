@@ -7,9 +7,11 @@ import com.ava.backend.exception.BusinessRuleException;
 import com.ava.backend.exception.ResourceNotFoundException;
 import com.ava.backend.model.*;
 import com.ava.backend.repository.PessoaRepository;
+import com.ava.backend.repository.DisciplinaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import java.util.Optional;
 
 @Service
 public class PessoaService {
@@ -19,6 +21,9 @@ public class PessoaService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private DisciplinaRepository disciplinaRepository;
 
     public Pessoa cadastrar(PessoaRequest request) {
         if (pessoaRepository.findByEmail(request.getEmail()).isPresent()) {
@@ -69,5 +74,49 @@ public class PessoaService {
         }
 
         return new LoginResponse(pessoa.getId(), pessoa.getNome(), pessoa.getEmail(), role);
+    }
+
+    public Pessoa atualizar(Long id, PessoaRequest request) {
+        Pessoa pessoa = pessoaRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Pessoa não encontrada"));
+
+        if (request.getNome() != null) {
+            pessoa.setNome(request.getNome());
+        }
+
+        if (request.getEmail() != null) {
+            Optional<Pessoa> existing = pessoaRepository.findByEmail(request.getEmail());
+            if (existing.isPresent() && !existing.get().getId().equals(id)) {
+                throw new BusinessRuleException("Email já cadastrado");
+            }
+            pessoa.setEmail(request.getEmail());
+        }
+
+        if (request.getCpf() != null) {
+            Optional<Pessoa> existing = pessoaRepository.findByCpf(request.getCpf());
+            if (existing.isPresent() && !existing.get().getId().equals(id)) {
+                throw new BusinessRuleException("CPF já cadastrado");
+            }
+            pessoa.setCpf(request.getCpf());
+        }
+
+        if (request.getSenha() != null && !request.getSenha().isEmpty()) {
+            pessoa.setSenha(passwordEncoder.encode(request.getSenha()));
+        }
+
+        return pessoaRepository.save(pessoa);
+    }
+
+    public void excluir(Long id) {
+        Pessoa pessoa = pessoaRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Pessoa não encontrada"));
+
+        if (pessoa instanceof Professor) {
+            if (disciplinaRepository.existsByProfessorId(id)) {
+                throw new BusinessRuleException("Professor não pode ser excluído pois possui disciplinas vinculadas");
+            }
+        }
+
+        pessoaRepository.delete(pessoa);
     }
 }
