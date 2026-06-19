@@ -43,8 +43,15 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        // Only run if database is empty to prevent duplicates
+        // Se já houver dados no banco, migra senhas antigas em texto plano para Argon2
         if (pessoaRepository.count() > 0) {
+            for (Pessoa p : pessoaRepository.findAll()) {
+                if (p.getSenha() != null && !p.getSenha().startsWith("$argon2")) {
+                    p.setSenha(passwordEncoder.encode(p.getSenha()));
+                    pessoaRepository.save(p);
+                    System.out.println("Senha de " + p.getNome() + " migrada com sucesso para Argon2.");
+                }
+            }
             return;
         }
 

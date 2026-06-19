@@ -10,7 +10,8 @@ Esta é a API Backend do **AVA (Ambiente Virtual de Aprendizagem)** desenvolvida
 * **Spring Boot 3.x**
   * Spring Data JPA
   * Spring Web (REST)
-  * Spring Validation (Validação de dados)
+  * Spring Validation
+  * Spring Security Crypto (Argon2 Hashing + Bouncy Castle)
 * **PostgreSQL** (Banco de dados relacional)
 * **Docker & Docker Compose** (Containerização)
 * **Lombok** (Produtividade/Redução de Boilerplate)
@@ -74,14 +75,23 @@ Com o Swagger, você pode:
 
 ---
 
+## 🔒 Segurança e Hashing de Senhas (Argon2)
+
+Para garantir a segurança das credenciais no banco de dados:
+* Implementamos o algoritmo de hashing **Argon2** (Argon2id) utilizando a biblioteca `spring-security-crypto` com suporte do provider de criptografia **Bouncy Castle**.
+* Todas as senhas de novos cadastros são convertidas em hash de forma segura antes de persistidas.
+* **Migração Automática de Senhas:** Caso o banco já tenha sido iniciado anteriormente com senhas em texto plano (`ddl-auto=update`), a aplicação executará uma rotina automática na inicialização (`DataInitializer`) que detecta senhas legadas não criptografadas e as atualiza automaticamente para hashes Argon2, garantindo que o login funcione perfeitamente sem necessidade de limpar o banco.
+
+---
+
 ## ⚡ Carga de Dados Inicial (Seed)
 
-Ao iniciar pela primeira vez em um banco de dados vazio, a aplicação executa automaticamente um script de seeding (`DataInitializer`) que pré-popula:
-* **Aluno:** Thiago Ventura (Email: `thiago@ficr.edu.br` / Senha: `123456`)
-* **Professores:** Wallace Felipe, Jose Gomes, Marcos Vinicius
-* **Secretária:** Maria Clara
-* **Disciplinas:** Desenvolvimento de Sistemas, Banco de Dados II, Programação Orientada a Objetos (Aluno Thiago matriculado em todas).
-* **Tarefas & Notas:** Tarefas entregues e avaliadas com notas correspondentes aos painéis visuais do portal.
+Ao iniciar a aplicação, um script de seeding (`DataInitializer`) pré-popula o banco de dados com as seguintes credenciais (todas devidamente criptografadas com Argon2):
+* **Aluno:** Thiago Ventura (Email: `thiago@ficr.edu.br` / Senha original: `123456`)
+* **Professores:** Wallace Felipe, Jose Gomes, Marcos Vinicius (Emails: `wallace@ficr.edu.br`, `jose@ficr.edu.br`, `marcos@ficr.edu.br` / Senhas: `123456`)
+* **Secretária:** Maria Clara (Email: `secretaria@ficr.edu.br` / Senha: `123456`)
+* **Disciplinas:** Desenvolvimento de Sistemas, Banco de Dados II, Programação Orientada a Objetos (com o Aluno Thiago matriculado em todas).
+* **Tarefas & Notas:** Tarefas pré-cadastradas e avaliadas correspondendo aos painéis visuais do frontend.
 
 ---
 
