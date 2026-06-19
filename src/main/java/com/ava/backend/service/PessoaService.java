@@ -8,6 +8,7 @@ import com.ava.backend.exception.ResourceNotFoundException;
 import com.ava.backend.model.*;
 import com.ava.backend.repository.PessoaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -15,6 +16,9 @@ public class PessoaService {
 
     @Autowired
     private PessoaRepository pessoaRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     public Pessoa cadastrar(PessoaRequest request) {
         if (pessoaRepository.findByEmail(request.getEmail()).isPresent()) {
@@ -42,7 +46,7 @@ public class PessoaService {
         novaPessoa.setNome(request.getNome());
         novaPessoa.setEmail(request.getEmail());
         novaPessoa.setCpf(request.getCpf());
-        novaPessoa.setSenha(request.getSenha()); // Senha em texto plano para fins acadêmicos
+        novaPessoa.setSenha(passwordEncoder.encode(request.getSenha())); // Senha codificada com Argon2
 
         return pessoaRepository.save(novaPessoa);
     }
@@ -51,7 +55,7 @@ public class PessoaService {
         Pessoa pessoa = pessoaRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
 
-        if (!pessoa.getSenha().equals(request.getSenha())) {
+        if (!passwordEncoder.matches(request.getSenha(), pessoa.getSenha())) {
             throw new BusinessRuleException("Senha incorreta");
         }
 

@@ -4,11 +4,15 @@ import com.ava.backend.model.*;
 import com.ava.backend.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
 
 @Component
 public class DataInitializer implements CommandLineRunner {
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Autowired
     private PessoaRepository pessoaRepository;
@@ -51,7 +55,7 @@ public class DataInitializer implements CommandLineRunner {
         sec.setNome("Maria Clara");
         sec.setEmail("secretaria@ficr.edu.br");
         sec.setCpf("111.111.111-11");
-        sec.setSenha("123456");
+        sec.setSenha(passwordEncoder.encode("123456"));
         sec = secretariaRepository.save(sec);
 
         // 2. Criar Professores
@@ -59,21 +63,21 @@ public class DataInitializer implements CommandLineRunner {
         profWallace.setNome("Wallace Felipe");
         profWallace.setEmail("wallace@ficr.edu.br");
         profWallace.setCpf("222.222.222-22");
-        profWallace.setSenha("123456");
+        profWallace.setSenha(passwordEncoder.encode("123456"));
         profWallace = professorRepository.save(profWallace);
 
         Professor profJose = new Professor();
         profJose.setNome("Jose Gomes");
         profJose.setEmail("jose@ficr.edu.br");
         profJose.setCpf("333.333.333-33");
-        profJose.setSenha("123456");
+        profJose.setSenha(passwordEncoder.encode("123456"));
         profJose = professorRepository.save(profJose);
 
         Professor profMarcos = new Professor();
         profMarcos.setNome("Marcos Vinicius");
         profMarcos.setEmail("marcos@ficr.edu.br");
         profMarcos.setCpf("444.444.444-44");
-        profMarcos.setSenha("123456");
+        profMarcos.setSenha(passwordEncoder.encode("123456"));
         profMarcos = professorRepository.save(profMarcos);
 
         // 3. Criar Aluno (Thiago Ventura)
@@ -81,7 +85,7 @@ public class DataInitializer implements CommandLineRunner {
         alunoThiago.setNome("Thiago Ventura");
         alunoThiago.setEmail("thiago@ficr.edu.br");
         alunoThiago.setCpf("555.555.555-55");
-        alunoThiago.setSenha("123456");
+        alunoThiago.setSenha(passwordEncoder.encode("123456"));
         alunoThiago = alunoRepository.save(alunoThiago);
 
         // 4. Criar Disciplinas
